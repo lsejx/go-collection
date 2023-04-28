@@ -1,4 +1,4 @@
 # go-collection
-* common data structure
-* generics
+* stack, queue
+* generics (for any type)
 * details are in each directory
