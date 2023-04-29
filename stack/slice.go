@@ -34,7 +34,7 @@ func (s *BufferedStack[T]) Pop() (T, bool) {
 }
 
 // NewBufferedStack returns empty BufferedStack which has specified capacity.
-func NewBufferedStack[T any](capacity int) *BufferedStack[T] {
+func NewBufferedStack[T any](capacity uint) *BufferedStack[T] {
 	return &BufferedStack[T]{
 		buf: make([]T, 0, capacity),
 	}
