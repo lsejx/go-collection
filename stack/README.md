@@ -1,7 +1,7 @@
 # go-collection/stack
 |type|spec|
 |:---|:---|
-|Stack|linked data structure|
+|Stack|linked list|
 |BufferedStack|fixed size buffer|
 <br><br>
 
