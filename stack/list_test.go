@@ -77,22 +77,29 @@ func TestStack(t *testing.T) {
 		ok bool
 	}
 	tests := []struct {
-		id string
-		pu []int
-		po []retT
+		id      string
+		isPushs []bool // true:Push
+		pu      []int
+		po      []retT
 	}{
-		{"one", []int{100}, []retT{{100, true}}},
-		{"some", []int{5, 10, 15, 20}, []retT{{20, true}, {15, true}, {10, true}, {5, true}}},
+		{"one", []bool{true, false}, []int{100}, []retT{{100, true}}},
+		{"allpush-allpop", []bool{true, true, true, true, false, false, false, false}, []int{5, 10, 15, 20}, []retT{{20, true}, {15, true}, {10, true}, {5, true}}},
+		{"mixed", []bool{true, false, true, true, false, true, false, false}, []int{1, 2, 3, 4}, []retT{{1, true}, {3, true}, {4, true}, {2, true}}},
 	}
 	for _, tt := range tests {
 		s := NewStack[int]()
-		for _, v := range tt.pu {
-			s.Push(v)
-		}
-		for _, w := range tt.po {
-			v, ok := s.Pop()
-			if v != w.v || ok != w.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, w.v, w.ok)
+		puCur, poCur := 0, 0
+		for _, isPush := range tt.isPushs {
+			if isPush {
+				s.Push(tt.pu[puCur])
+				puCur++
+			} else {
+				v, ok := s.Pop()
+				w := tt.po[poCur]
+				if v != w.v || ok != w.ok {
+					t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, w.v, w.ok)
+				}
+				poCur++
 			}
 		}
 		if v, ok := s.Pop(); ok {

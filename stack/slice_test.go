@@ -99,29 +99,39 @@ func TestBufferedStack(t *testing.T) {
 		ok bool
 	}
 	tests := []struct {
-		id     string
-		cap    uint
-		pu     []int
-		puRets []error
-		po     []retT
+		id      string
+		cap     uint
+		isPushs []bool
+		pu      []int
+		puRets  []error
+		po      []retT
 	}{
-		{"one", 1, []int{5}, []error{nil}, []retT{{5, true}}},
-		{"some", 3, []int{100, 101, 50}, []error{nil, nil, nil}, []retT{{50, true}, {101, true}, {100, true}}},
-		{"0buf-err", 0, []int{1}, []error{ErrBufferOverflow}, []retT{}},
-		{"somebuf-err", 2, []int{1, 2, 3}, []error{nil, nil, ErrBufferOverflow}, []retT{{2, true}, {1, true}}},
+		// nil-err case
+		{"one", 1, []bool{true, false}, []int{5}, []error{nil}, []retT{{5, true}}},
+		{"allpush-allpop", 3, []bool{true, true, true, false, false, false}, []int{100, 101, 50}, []error{nil, nil, nil}, []retT{{50, true}, {101, true}, {100, true}}},
+		{"mixed", 2, []bool{true, true, false, true, false, false}, []int{1, 2, 3}, []error{nil, nil, nil}, []retT{{2, true}, {3, true}, {1, true}}},
+		// err case
+		{"0buf-err", 0, []bool{true}, []int{1}, []error{ErrBufferOverflow}, []retT{}},
+		{"somebuf-err", 2, []bool{true, true, true, false, false}, []int{1, 2, 3}, []error{nil, nil, ErrBufferOverflow}, []retT{{2, true}, {1, true}}},
 	}
 	for _, tt := range tests {
 		s := NewBufferedStack[int](tt.cap)
-		for i, v := range tt.pu {
-			err := s.Push(v)
-			if !errors.Is(err, tt.puRets[i]) {
-				t.Fatalf("id:%v, err:%v, pu:%v", tt.id, err, v)
-			}
-		}
-		for _, r := range tt.po {
-			v, ok := s.Pop()
-			if v != r.v || ok != r.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
+		puCur, poCur := 0, 0
+		for _, isPush := range tt.isPushs {
+			if isPush {
+				v := tt.pu[puCur]
+				err := s.Push(v)
+				if !errors.Is(err, tt.puRets[puCur]) {
+					t.Fatalf("id:%v, err:%v, v:%v", tt.id, err, v)
+				}
+				puCur++
+			} else {
+				v, ok := s.Pop()
+				w := tt.po[poCur]
+				if v != w.v || ok != w.ok {
+					t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, w.v, w.ok)
+				}
+				poCur++
 			}
 		}
 		if v, ok := s.Pop(); ok {
