@@ -58,10 +58,7 @@ func TestPop(t *testing.T) {
 		s := &Stack[int]{tt.ini}
 		for _, r := range tt.rets {
 			v, ok := s.Pop()
-			if ok != r.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
-			}
-			if v != r.v {
+			if v != r.v || ok != r.ok {
 				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
 			}
 		}
