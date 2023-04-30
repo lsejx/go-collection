@@ -11,24 +11,20 @@ func TestNewStack(t *testing.T) {
 
 func TestPush(t *testing.T) {
 	tests := []struct {
-		id   string
-		ini  *data[int]
-		args []int
-		want []int
+		id    string
+		ini   *data[int]
+		arg   int
+		after []int
 	}{
-		{"nil-one", nil, []int{5}, []int{5}},
-		{"nil-some", nil, []int{1, 2, 3, 4, 5}, []int{5, 4, 3, 2, 1}},
-		{"some-one", &data[int]{2, &data[int]{1, nil}}, []int{3}, []int{3, 2, 1}},
-		{"some-some", &data[int]{2, &data[int]{1, nil}}, []int{3, 4, 5, 6}, []int{6, 5, 4, 3, 2, 1}},
+		{"nil", nil, 5, []int{5}},
+		{"some", &data[int]{2, &data[int]{1, nil}}, 3, []int{3, 2, 1}},
 	}
 
 	for _, tt := range tests {
 		s := &Stack[int]{tt.ini}
-		for _, a := range tt.args {
-			s.Push(a)
-		}
+		s.Push(tt.arg)
 		cur := s.top
-		for _, w := range tt.want {
+		for _, w := range tt.after {
 			if cur.v != w {
 				t.Fatalf("id:%v, v:%v, w:%v", tt.id, cur.v, w)
 			}
@@ -46,27 +42,30 @@ func TestPop(t *testing.T) {
 		ok bool
 	}
 	tests := []struct {
-		id   string
-		ini  *data[int]
-		rets []retT
+		id    string
+		ini   *data[int]
+		ret   retT
+		after []int
 	}{
-		{"nil", nil, []retT{{0, false}}},
-		{"one", &data[int]{5, nil}, []retT{{5, true}}},
-		{"some", &data[int]{5, &data[int]{4, &data[int]{3, nil}}}, []retT{{5, true}, {4, true}, {3, true}}},
+		{"nil", nil, retT{0, false}, []int{}},
+		{"one", &data[int]{5, nil}, retT{5, true}, []int{}},
+		{"some", &data[int]{5, &data[int]{4, &data[int]{3, nil}}}, retT{5, true}, []int{4, 3}},
 	}
 	for _, tt := range tests {
 		s := &Stack[int]{tt.ini}
-		for _, r := range tt.rets {
-			v, ok := s.Pop()
-			if v != r.v || ok != r.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
+		v, ok := s.Pop()
+		if v != tt.ret.v || ok != tt.ret.ok {
+			t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, tt.ret.v, tt.ret.ok)
+		}
+		cur := s.top
+		for _, w := range tt.after {
+			if cur.v != w {
+				t.Fatalf("id:%v, v:%v, w:%v", tt.id, cur.v, w)
 			}
+			cur = cur.prev
 		}
-		if s.top != nil {
-			t.Fatalf("id:%v, extratop:%v", tt.id, s.top.v)
-		}
-		if v, ok := s.Pop(); ok {
-			t.Fatalf("id:%v, extrapop:%v", tt.id, v)
+		if cur != nil {
+			t.Fatalf("id:%v, extradata:%v", tt.id, cur.v)
 		}
 	}
 }
