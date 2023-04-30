@@ -56,13 +56,13 @@ func TestPop(t *testing.T) {
 	}
 	for _, tt := range tests {
 		s := &Stack[int]{tt.ini}
-		for _, ret := range tt.rets {
+		for _, r := range tt.rets {
 			v, ok := s.Pop()
-			if ok != ret.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, ret.v, ret.ok)
+			if ok != r.ok {
+				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
 			}
-			if v != ret.v {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, ret.v, ret.ok)
+			if v != r.v {
+				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
 			}
 		}
 		if v, ok := s.Pop(); ok {
