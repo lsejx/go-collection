@@ -88,10 +88,7 @@ func TestStack(t *testing.T) {
 		}
 		for _, w := range tt.po {
 			v, ok := s.Pop()
-			if ok != w.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, w.v, w.ok)
-			}
-			if v != w.v {
+			if v != w.v || ok != w.ok {
 				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, w.v, w.ok)
 			}
 		}
