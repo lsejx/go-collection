@@ -13,39 +13,42 @@ func TestNewQueue(t *testing.T) {
 }
 
 func TestEnqueue(t *testing.T) {
-	type state struct {
-		h *data[int]
-		t *data[int]
-	}
+	type (
+		state struct {
+			h *data[int]
+			t *data[int]
+		}
+	)
 	t1 := &data[int]{4, nil}
 	h1 := &data[int]{1, &data[int]{2, &data[int]{3, t1}}}
-	t2 := &data[int]{100, nil}
-	h2 := &data[int]{6, &data[int]{0, t2}}
 	tests := []struct {
-		id   string
-		ini  state
-		args []int
-		want []int // head to tail
+		id    string
+		ini   state
+		arg   int
+		after []int // head to tail
 	}{
-		{"nil-one", state{nil, nil}, []int{1}, []int{1}},
-		{"nil-some", state{nil, nil}, []int{2, 4, 6, 8}, []int{2, 4, 6, 8}},
-		{"some-one", state{h1, t1}, []int{1}, []int{1, 2, 3, 4, 1}},
-		{"some-some", state{h2, t2}, []int{20, 90}, []int{6, 0, 100, 20, 90}},
+		{"nil", state{nil, nil}, 1, []int{1}},
+		{"some-one", state{h1, t1}, 5, []int{1, 2, 3, 4, 5}},
 	}
 	for _, tt := range tests {
 		q := Queue[int]{tt.ini.h, tt.ini.t}
-		for _, a := range tt.args {
-			q.Enqueue(a)
-		}
+		q.Enqueue(tt.arg)
 		cur := q.head
-		for _, w := range tt.want {
+		var tail *data[int]
+		for _, w := range tt.after {
 			if cur.v != w {
 				t.Fatalf("id:%v, v:%v, w:%v", tt.id, cur.v, w)
+			}
+			if cur.next == nil {
+				tail = cur
 			}
 			cur = cur.next
 		}
 		if cur != nil {
 			t.Fatalf("id:%v, extradata:%v", tt.id, cur.v)
+		}
+		if q.tail != tail {
+			t.Fatalf("id:%v, unlinkedtail", tt.id)
 		}
 	}
 }
@@ -65,30 +68,34 @@ func TestDequeue(t *testing.T) {
 	t1 := &data[int]{10, nil}
 	h1 := &data[int]{1, &data[int]{700, t1}}
 	tests := []struct {
-		id   string
-		ini  state
-		rets []retT
+		id    string
+		ini   state
+		ret   retT
+		after []int
 	}{
-		{"nil", state{nil, nil}, []retT{}},
-		{"one", state{d1, d1}, []retT{{5, true}}},
-		{"some", state{h1, t1}, []retT{{1, true}, {700, true}, {10, true}}},
+		{"nil", state{nil, nil}, retT{0, false}, []int{}},
+		{"one", state{d1, d1}, retT{5, true}, []int{}},
+		{"some", state{h1, t1}, retT{1, true}, []int{700, 10}},
 	}
 	for _, tt := range tests {
 		q := Queue[int]{tt.ini.h, tt.ini.t}
-		for _, r := range tt.rets {
-			v, ok := q.Dequeue()
-			if v != r.v || ok != r.ok {
-				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
+		v, ok := q.Dequeue()
+		if v != tt.ret.v || ok != tt.ret.ok {
+			t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, tt.ret.v, tt.ret.ok)
+		}
+		cur := q.head
+		var tail *data[int]
+		for _, w := range tt.after {
+			if cur.v != w {
+				t.Fatalf("id:%v, v:%v, w:%v", tt.id, cur.v, w)
 			}
+			if cur.next == nil {
+				tail = cur
+			}
+			cur = cur.next
 		}
-		if q.head != nil {
-			t.Fatalf("id:%v, extrahead:%v", tt.id, q.head.v)
-		}
-		if q.tail != nil {
-			t.Fatalf("id:%v, extratail:%v", tt.id, q.tail.v)
-		}
-		if v, ok := q.Dequeue(); ok {
-			t.Fatalf("id:%v, extradequeue:%v", tt.id, v)
+		if q.tail != tail {
+			t.Fatalf("id:%v, unlinkedtail", tt.id)
 		}
 	}
 }
