@@ -27,11 +27,11 @@ func TestNewBufferedStack(t *testing.T) {
 
 func TestBPush(t *testing.T) {
 	tests := []struct {
-		id    string
-		ini   []int
-		args  []int
-		wants []int
-		rets  []error
+		id   string
+		ini  []int
+		args []int
+		want []int
+		rets []error
 	}{
 		// nil-error case
 		{"nil-one", make([]int, 0, 1), []int{1}, []int{1}, []error{nil}},
@@ -54,7 +54,7 @@ func TestBPush(t *testing.T) {
 				t.Fatalf("id:%v, err:%v, a:%v", tt.id, err, a)
 			}
 		}
-		for i, w := range tt.wants {
+		for i, w := range tt.want {
 			if s.buf[i] != w {
 				t.Fatalf("id:%v, v:%v, w:%v", tt.id, s.buf[i], w)
 			}

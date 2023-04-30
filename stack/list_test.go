@@ -11,10 +11,10 @@ func TestNewStack(t *testing.T) {
 
 func TestPush(t *testing.T) {
 	tests := []struct {
-		id    string
-		ini   *data[int]
-		args  []int
-		wants []int
+		id   string
+		ini  *data[int]
+		args []int
+		want []int
 	}{
 		{"nil-one", nil, []int{5}, []int{5}},
 		{"nil-some", nil, []int{1, 2, 3, 4, 5}, []int{5, 4, 3, 2, 1}},
@@ -28,7 +28,7 @@ func TestPush(t *testing.T) {
 			s.Push(a)
 		}
 		cur := s.top
-		for _, w := range tt.wants {
+		for _, w := range tt.want {
 			if cur.v != w {
 				t.Fatalf("id:%v, v:%v, w:%v", tt.id, cur.v, w)
 			}
