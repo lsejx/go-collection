@@ -62,8 +62,11 @@ func TestPop(t *testing.T) {
 				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
 			}
 		}
+		if s.top != nil {
+			t.Fatalf("id:%v, extratop:%v", tt.id, s.top.v)
+		}
 		if v, ok := s.Pop(); ok {
-			t.Fatalf("id:%v, extradata:%v", tt.id, v)
+			t.Fatalf("id:%v, extrapop:%v", tt.id, v)
 		}
 	}
 }

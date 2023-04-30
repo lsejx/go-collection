@@ -84,8 +84,11 @@ func TestBPop(t *testing.T) {
 				t.Fatalf("id:%v, got:(%v,%v), w:(%v,%v)", tt.id, v, ok, r.v, r.ok)
 			}
 		}
+		if len(s.buf) != 0 {
+			t.Fatalf("id:%v, extradata:%v", tt.id, s.buf)
+		}
 		if v, ok := s.Pop(); ok {
-			t.Fatalf("id:%v, extradata:%v", tt.id, v)
+			t.Fatalf("id:%v, extrapop:%v", tt.id, v)
 		}
 	}
 }
