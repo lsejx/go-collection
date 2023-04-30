@@ -87,5 +87,46 @@ func TestDequeue(t *testing.T) {
 		if q.tail != nil {
 			t.Fatalf("id:%v, extratail:%v", tt.id, q.tail.v)
 		}
+		if v, ok := q.Dequeue(); ok {
+			t.Fatalf("id:%v, extradequeue:%v", tt.id, v)
+		}
+	}
+}
+
+func TestQueue(t *testing.T) {
+	type retT struct {
+		v  int
+		ok bool
+	}
+	tests := []struct {
+		id    string
+		isEns []bool
+		en    []int
+		rets  []retT
+	}{
+		{"one", []bool{true, false}, []int{100}, []retT{{100, true}}},
+		{"allen-allde", []bool{true, true, true, true, true, false, false, false, false, false}, []int{1, 2, 3, 4, 5}, []retT{{1, true}, {2, true}, {3, true}, {4, true}, {5, true}}},
+		{"mixed", []bool{true, false, true, true, false, false}, []int{1, 2, 3}, []retT{{1, true}, {2, true}, {3, true}}},
+	}
+	for _, tt := range tests {
+		q := NewQueue[int]()
+
+		enCur, deCur := 0, 0
+		for _, isEn := range tt.isEns {
+			if isEn {
+				q.Enqueue(tt.en[enCur])
+				enCur++
+			} else {
+				v, ok := q.Dequeue()
+				w := tt.rets[deCur]
+				if v != w.v || ok != w.ok {
+					t.Fatalf("id:%v, got:(%v,%v), w:(%v, %v)", tt.id, v, ok, w.v, w.ok)
+				}
+				deCur++
+			}
+		}
+		if v, ok := q.Dequeue(); ok {
+			t.Fatalf("id:%v, extradata:%v", tt.id, v)
+		}
 	}
 }
