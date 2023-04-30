@@ -72,7 +72,7 @@ func TestBPop(t *testing.T) {
 		ini  []int
 		rets []retT
 	}{
-		{"nil", make([]int, 0), make([]retT, 0)},
+		{"nil", make([]int, 0), []retT{{0, false}}},
 		{"one", []int{4}, []retT{{4, true}}},
 		{"some", []int{2, 41, 99}, []retT{{99, true}, {41, true}, {2, true}}},
 	}
