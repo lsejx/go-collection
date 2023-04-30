@@ -33,6 +33,9 @@ func (q *Queue[T]) Dequeue() (T, bool) {
 	}
 	v := q.head.v
 	q.head = q.head.next
+	if q.head == nil {
+		q.tail = nil
+	}
 	return v, true
 }
 
