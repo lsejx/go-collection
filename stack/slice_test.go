@@ -25,6 +25,60 @@ func TestNewBufferedStack(t *testing.T) {
 	}
 }
 
+func TestCap(t *testing.T) {
+	tests := []struct {
+		ini  []int
+		want uint
+	}{
+		{make([]int, 0), 0},
+		{make([]int, 0, 1), 1},
+		{make([]int, 0, 5), 5},
+	}
+	for _, tt := range tests {
+		s := &BufferedStack[int]{tt.ini}
+		if s.Cap() != tt.want {
+			t.Fatalf("cap:%v, w:%v", s.Cap(), tt.want)
+		}
+	}
+}
+
+func TestLen(t *testing.T) {
+	tests := []struct {
+		ini  []int
+		want uint
+	}{
+		{make([]int, 0), 0},
+		{make([]int, 1), 1},
+		{make([]int, 5), 5},
+	}
+	for _, tt := range tests {
+		s := &BufferedStack[int]{tt.ini}
+		if s.Len() != tt.want {
+			t.Fatalf("len:%v, w:%v", s.Len(), tt.want)
+		}
+	}
+}
+
+func TestIsFull(t *testing.T) {
+	tests := []struct {
+		ini  []int
+		want bool
+	}{
+		{make([]int, 0), true},
+		{make([]int, 0, 1), false},
+		{make([]int, 1), true},
+		{make([]int, 0, 2), false},
+		{make([]int, 1, 2), false},
+		{make([]int, 2), true},
+	}
+	for _, tt := range tests {
+		s := &BufferedStack[int]{tt.ini}
+		if s.IsFull() != tt.want {
+			t.Fatalf("ini:%v, f:%v, w:%v", tt.ini, s.IsFull(), tt.want)
+		}
+	}
+}
+
 func TestBPush(t *testing.T) {
 	tests := []struct {
 		id    string
