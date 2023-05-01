@@ -32,6 +32,7 @@ func (q *BufferedQueue[T]) Len() uint {
 	return q.tail - q.head + 1
 }
 
+// IsFull returns whether queue is full.
 func (q *BufferedQueue[T]) IsFull() bool {
 	return q.Len() == q.Cap()
 }
