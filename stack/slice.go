@@ -10,6 +10,21 @@ type BufferedStack[T any] struct {
 	buf []T
 }
 
+// Cap returns capacity of stack.
+func (s *BufferedStack[T]) Cap() uint {
+	return uint(cap(s.buf))
+}
+
+// Len returns number of items which stack is holding.
+func (s *BufferedStack[T]) Len() uint {
+	return uint(len(s.buf))
+}
+
+// IsFull returns whether stack is full.
+func (s *BufferedStack[T]) IsFull() bool {
+	return s.Len() == s.Cap()
+}
+
 // Push pushed a value to stack.
 // Push doesn't use built-in append function, so the buffer size doesn't grow.
 // If buffer is full before pushing, ErrBufferOverflow is returned.
