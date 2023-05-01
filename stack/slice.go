@@ -29,22 +29,22 @@ func (s *BufferedStack[T]) IsFull() bool {
 // Push doesn't use built-in append function, so the buffer size doesn't grow.
 // If buffer is full before pushing, ErrBufferOverflow is returned.
 func (s *BufferedStack[T]) Push(value T) error {
-	if len(s.buf) == cap(s.buf) {
+	if s.IsFull() {
 		return ErrBufferOverflow
 	}
-	s.buf = s.buf[:len(s.buf)+1]
-	s.buf[len(s.buf)-1] = value
+	s.buf = s.buf[:s.Len()+1]
+	s.buf[s.Len()-1] = value
 	return nil
 }
 
 // Pop returns (value, true) if any value is existing in stack, (default-value, false) if stack is empty.
 func (s *BufferedStack[T]) Pop() (T, bool) {
-	if len(s.buf) == 0 {
+	if s.Len() == 0 {
 		var v T
 		return v, false
 	}
-	ret := s.buf[len(s.buf)-1]
-	s.buf = s.buf[:len(s.buf)-1]
+	ret := s.buf[s.Len()-1]
+	s.buf = s.buf[:s.Len()-1]
 	return ret, true
 }
 
