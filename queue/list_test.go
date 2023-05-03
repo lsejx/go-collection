@@ -108,7 +108,7 @@ func TestQueue(t *testing.T) {
 	tests := []struct {
 		id    string
 		isEns []bool
-		en    []int
+		ens   []int
 		rets  []retT
 	}{
 		{"one", []bool{true, false}, []int{100}, []retT{{100, true}}},
@@ -121,7 +121,7 @@ func TestQueue(t *testing.T) {
 		enCur, deCur := 0, 0
 		for _, isEn := range tt.isEns {
 			if isEn {
-				q.Enqueue(tt.en[enCur])
+				q.Enqueue(tt.ens[enCur])
 				enCur++
 			} else {
 				v, ok := q.Dequeue()
