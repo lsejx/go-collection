@@ -23,6 +23,12 @@
 ## BufferedQueue
 	q := queue.NewBufferedQueue[int](1)
 
+	c := q.Cap()
+	// 1
+
+	l := q.Len()
+	// 0
+
 	err := q.Enqueue(1)
 	// nil
 
