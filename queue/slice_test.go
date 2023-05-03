@@ -235,3 +235,42 @@ func TestBDequeue(t *testing.T) {
 		}
 	}
 }
+
+func TestBufferedQueue(t *testing.T) {
+	type retT struct {
+		v  int
+		ok bool
+	}
+	tests := []struct {
+		id    string
+		cap   uint
+		isEns []bool
+		ens   []int
+		rets  []retT
+	}{
+		{"one", 1, []bool{true, false}, []int{100}, []retT{{100, true}}},
+		{"allen-allde", 5, []bool{true, true, true, true, true, false, false, false, false, false}, []int{1, 2, 3, 4, 5}, []retT{{1, true}, {2, true}, {3, true}, {4, true}, {5, true}}},
+		{"mixed", 2, []bool{true, false, true, true, false, false}, []int{1, 2, 3}, []retT{{1, true}, {2, true}, {3, true}}},
+	}
+	for _, tt := range tests {
+		q := NewBufferedQueue[int](tt.cap)
+
+		enCur, deCur := 0, 0
+		for _, isEn := range tt.isEns {
+			if isEn {
+				q.Enqueue(tt.ens[enCur])
+				enCur++
+			} else {
+				v, ok := q.Dequeue()
+				w := tt.rets[deCur]
+				if v != w.v || ok != w.ok {
+					t.Fatalf("id:%v, got:(%v,%v), w:(%v, %v)", tt.id, v, ok, w.v, w.ok)
+				}
+				deCur++
+			}
+		}
+		if v, ok := q.Dequeue(); ok {
+			t.Fatalf("id:%v, extradata:%v", tt.id, v)
+		}
+	}
+}
