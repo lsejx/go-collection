@@ -29,6 +29,9 @@
 	l := q.Len()
 	// 0
 
+	isFull := q.IsFull()
+	// false
+
 	err := q.Enqueue(1)
 	// nil
 
