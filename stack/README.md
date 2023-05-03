@@ -23,6 +23,15 @@
 ## BufferedStack
 	s := stack.NewBufferedStack[int](1)
 
+	c := s.Cap()
+	// 1
+
+	l := s.Len()
+	// 0
+
+	isFull := s.IsFull()
+	// false
+
 	err := s.Push(1)
 	// nil
 
